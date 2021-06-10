@@ -3,3 +3,4 @@ pyjwt
 asyncio
 pytest
 coverage
+cryptography
