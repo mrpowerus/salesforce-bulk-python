@@ -3,7 +3,7 @@
 Salesforce Bulk Python
 ======================
 
-Salesforce Bulk Python is a Python library for using the Salesforce REST Bulk API v2.0. It is especially designed to handle big-data worksloads, in which all data from Salesforce should be extraced.
+Salesforce Bulk Python is a Python library for using the Salesforce REST Bulk API v2.0. It is especially designed to handle big-data workloads, in which all data from Salesforce should be extraced.
 
 It makes uses of asyncio for parallel execution. And is easily exendable by writing your own `BulkAPIResultHandler`.
 
@@ -79,6 +79,6 @@ q.extend([job1, job2])
 asyncio.run(q.run_all())
 ```
 
-When the jobs above are executed, the results will be passed to the handler.
+ The results will be passed to the handler when the jobs above are executed.
 
 
