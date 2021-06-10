@@ -11,7 +11,7 @@ name: Upload Python Package
 on: [push, pull_request]
 
 jobs:
-  test:
+  Build and Test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -33,11 +33,6 @@ jobs:
         SF_PRIVATE_KEY: ${{ secrets.SF_PRIVATE_KEY }} 
         SF_USERNAME: ${{ secrets.SF_USERNAME }} 
       
-    
-  deploy:
-    if: ${{ github.ref == 'refs/heads/master' }}
-    runs-on: ubuntu-latest
-    steps:
     - name: Build package
       run: python -m build
     - name: Publish package
