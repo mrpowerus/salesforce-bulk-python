@@ -58,6 +58,7 @@ class ADLSHandler(BulkAPIResultHandler):
 We currently only support the `GetAllBulkAPIJob` but you can subclass the `BulkAPIJob` yourself and implement a custom `query` method.
 
 ```python
+  # create a job
   job1 = GetAllBulkAPIJob(obj,con)
   job1.on_complete.append(ADLSHandler)
 
