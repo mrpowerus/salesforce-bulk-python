@@ -9,9 +9,9 @@ def connection_settings():
     return BulkAPIConnectionSettings(
         private_key  = os.environ['SF_PRIVATE_KEY'],
         consumer_key = os.environ['SF_CONSUMER_KEY'],
-        audience     = 'https://test.salesforce.com',
+        audience     = 'https://login.salesforce.com',
         username     = os.environ['SF_USERNAME'],
-        api_version  = 'v52.0'
+        api_version  = 'v51.0'
     )
 
 @fixture

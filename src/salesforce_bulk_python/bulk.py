@@ -37,7 +37,7 @@ class BulkAPIConnection():
         }
         assertion = jwt.encode(claim, private_key, algorithm='RS256', headers={'alg':'RS256'})
 
-        r = requests.post('https://test.salesforce.com/services/oauth2/token', data = {
+        r = requests.post(f'{self.settings.audience}/services/oauth2/token', data = {
             'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer',
             'assertion': assertion,
         })
@@ -64,7 +64,7 @@ class BulkAPIConnection():
 
     def get_all_objects(self) -> List[str]:
         headers = self.headers
-        req = requests.get(f'{self.instance_url}/services/data/v52.0/sobjects',headers=headers)
+        req = requests.get(f'{self.instance_url}/services/data/{self.settings.api_version}/sobjects',headers=headers)
         req.raise_for_status()
         return [elem['name'] for elem in req.json()['sobjects'] if elem['queryable']==True]
     
@@ -79,7 +79,7 @@ class SalesforceObject():
 
     def describe(self):
         headers = self.connection.headers
-        req = requests.get(f'{self.connection.instance_url}/services/data/v52.0/sobjects/{self.name}/describe',headers=headers)
+        req = requests.get(f'{self.connection.instance_url}/services/data/{self.connection.settings.api_version}/sobjects/{self.name}/describe',headers=headers)
         req.raise_for_status()
         return req.json()
 
@@ -111,7 +111,7 @@ class BulkAPIJob():
         self.id = None
 
     def status(self):
-        req=requests.get(f"{self.connection.instance_url}/services/data/v52.0/jobs/query/{self.id}",headers=self.connection.headers)
+        req=requests.get(f"{self.connection.instance_url}/services/data/{self.connection.settings.api_version}/jobs/query/{self.id}",headers=self.connection.headers)
         req.raise_for_status()
         return req.json()['state']
         
@@ -119,7 +119,7 @@ class BulkAPIJob():
     async def start(self):
         print(f'Starting job for {self.object.name}')
         req=requests.post(
-            f"{self.connection.instance_url}/services/data/v52.0/jobs/query",
+            f"{self.connection.instance_url}/services/data/{self.connection.settings.api_version}/jobs/query",
             data=json.dumps(self.body),
             headers=self.connection.headers
         )
@@ -140,7 +140,7 @@ class BulkAPIJob():
             await asyncio.sleep(1)
             status = self.status()
             if status=='JobComplete':
-                self.on_complete(f"{self.connection.instance_url}/services/data/v52.0/jobs/query/{self.id}/results",self)
+                self.on_complete(f"{self.connection.instance_url}/services/data/{self.connection.settings.api_version}/jobs/query/{self.id}/results",self)
                 print(f'Finished job for {self.object.name}')
             break 
         return 0
