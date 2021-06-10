@@ -13,7 +13,8 @@ on:
     types: [published]
 
 jobs:
-  Release:
+  release:
+    name: Release
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -34,7 +35,7 @@ jobs:
         SF_CONSUMER_KEY: ${{ secrets.SF_CONSUMER_KEY }} 
         SF_PRIVATE_KEY: ${{ secrets.SF_PRIVATE_KEY }} 
         SF_USERNAME: ${{ secrets.SF_USERNAME }} 
-        
+
     - name: Build package
       run: python -m build
     - name: Publish package
