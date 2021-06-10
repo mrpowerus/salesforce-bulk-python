@@ -1,0 +1,4 @@
+requests
+pyjwt
+asyncio
+pytest

@@ -1,0 +1,7 @@
+.venv
+.vscode
+.env
+__pycache__
+.pytest_cache
+conftest.py
+*.egg-info
