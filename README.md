@@ -1,4 +1,6 @@
-[![Upload Python Package](https://github.com/mrpowerus/salesforce-bulk-python/actions/workflows/python-publish.yml/badge.svg)](https://github.com/mrpowerus/salesforce-bulk-python/actions/workflows/python-publish.yml)
+[![Build](https://github.com/mrpowerus/salesforce-bulk-python/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/mrpowerus/salesforce-bulk-python/actions/workflows/build.yml)
+
+[![Release](https://github.com/mrpowerus/salesforce-bulk-python/actions/workflows/release.yml/badge.svg?branch=master)](https://github.com/mrpowerus/salesforce-bulk-python/actions/workflows/release.yml)
 
 Salesforce Bulk Python
 ======================
