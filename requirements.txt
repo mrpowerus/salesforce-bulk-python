@@ -2,3 +2,4 @@ requests
 pyjwt
 asyncio
 pytest
+coverage
