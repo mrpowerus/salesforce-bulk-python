@@ -1,3 +1,5 @@
+[![Upload Python Package](https://github.com/mrpowerus/salesforce-bulk-python/actions/workflows/python-publish.yml/badge.svg)](https://github.com/mrpowerus/salesforce-bulk-python/actions/workflows/python-publish.yml)
+
 Salesforce Bulk Python
 ======================
 
