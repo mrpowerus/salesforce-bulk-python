@@ -76,7 +76,6 @@ q.extend([job1, job2])
 asyncio.run(q.run_all())
 ```
 
-
-
+When the jobs above are executed, the results will be passed to the handler.
 
 
