@@ -142,7 +142,7 @@ class BulkAPIJob():
             if status=='JobComplete':
                 self.on_complete(f"{self.connection.instance_url}/services/data/{self.connection.settings.api_version}/jobs/query/{self.id}/results",self)
                 print(f'Finished job for {self.object.name}')
-            break 
+                break 
         return 0
         
     @property
