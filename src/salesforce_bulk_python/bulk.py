@@ -155,6 +155,9 @@ class BulkAPIJob():
             status = await self.status()
             print(f'{self.object.name}: {status}')
 
+            if status=='Failed':
+                break
+
             if status=='JobComplete':
                 await self.on_complete(f"{self.connection.instance_url}/services/data/{self.connection.settings.api_version}/jobs/query/{self.id}/results",self)
                 print(f'Finished job for {self.object.name}')
@@ -252,3 +255,4 @@ class JobQueue(list):
             else:
                 break
                 
+
