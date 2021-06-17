@@ -5,7 +5,7 @@ import json
 import asyncio
 from typing import List
 from abc import ABC, abstractmethod
-import queue
+from datetime import datetime
 
 from requests.models import HTTPError
 
@@ -110,19 +110,25 @@ class BulkAPIJob():
         self.object = object
         self.id = None
 
-    def status(self):
-        req=requests.get(f"{self.connection.instance_url}/services/data/{self.connection.settings.api_version}/jobs/query/{self.id}",headers=self.connection.headers)
+    async def status(self):
+        loop = asyncio.get_event_loop()
+        f3=loop.run_in_executor(None,lambda:requests.get(f"{self.connection.instance_url}/services/data/{self.connection.settings.api_version}/jobs/query/{self.id}",headers=self.connection.headers))
+        req = await f3
         req.raise_for_status()
         return req.json()['state']
         
 
     async def start(self):
         print(f'Starting job for {self.object.name}')
-        req=requests.post(
+
+        loop = asyncio.get_event_loop()
+        f1=loop.run_in_executor(None,lambda: requests.post(
             f"{self.connection.instance_url}/services/data/{self.connection.settings.api_version}/jobs/query",
             data=json.dumps(self.body),
             headers=self.connection.headers
-        )
+        ))
+        req = await f1
+
         try:
             req.raise_for_status()
         except HTTPError as e:
@@ -136,11 +142,21 @@ class BulkAPIJob():
                 raise
             
         self.id = req.json()['id']
+        delay_iter = iter([1,1,10,30,60])
+        
         while True:
-            await asyncio.sleep(1)
-            status = self.status()
+            try:
+                delay = next(delay_iter)
+            except StopIteration:
+                delay = delay
+
+            await asyncio.sleep(delay)
+
+            status = await self.status()
+            print(f'{self.object.name}: {status}')
+
             if status=='JobComplete':
-                self.on_complete(f"{self.connection.instance_url}/services/data/{self.connection.settings.api_version}/jobs/query/{self.id}/results",self)
+                await self.on_complete(f"{self.connection.instance_url}/services/data/{self.connection.settings.api_version}/jobs/query/{self.id}/results",self)
                 print(f'Finished job for {self.object.name}')
                 break 
         return 0
@@ -187,13 +203,18 @@ class BulkAPIResultHandler(ABC):
         self.batch_number = 0
         self.job = job
 
-    def fetch(self):
-        result = requests.get(f"{self.result_url}?maxRecords=10000",headers=self.job.connection.headers)
+    async def fetch(self):
+        loop = asyncio.get_event_loop()
+        f1=loop.run_in_executor(None,lambda: requests.get(f"{self.result_url}?maxRecords=50000",headers=self.job.connection.headers))
+
+        self.datetime_start_fetch = datetime.now()
+        result = await f1
         self.handle(result)
         while 'sforce-locator' in result.headers.keys():
             if (result.headers['sforce-locator']!='NA') & (result.headers['sforce-locator']!='null'):     
                 self.batch_number += 1  
-                result=requests.get(f"{self.result_url}?locator={result.headers['sforce-locator']}&maxRecords=10000",headers=self.job.connection.headers)
+                f2=loop.run_in_executor(None,lambda: requests.get(f"{self.result_url}?locator={result.headers['sforce-locator']}&maxRecords=50000",headers=self.job.connection.headers))
+                result=await f2
                 self.handle(result)
             else:
                 break
@@ -205,10 +226,10 @@ class BulkAPIResultHandler(ABC):
 
 class JobCompleteEvent(List[BulkAPIResultHandler]):
     
-    def __call__(self, *args, **kwargs):
+    async def __call__(self, *args, **kwargs):
         for c in self:
             i=c(*args,*kwargs)
-            i.fetch()
+            await i.fetch()
 
     def __repr__(self):
         return "Event(%s)" % list.__repr__(self)
@@ -231,4 +252,3 @@ class JobQueue(list):
             else:
                 break
                 
-
